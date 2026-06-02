@@ -1,6 +1,6 @@
 {
-  "name": "Axiom Digit Trader",
-  "short_name": "Axiom Digit",
+  "name": "Axion Digit",
+  "short_name": "Axion Digit",
   "description": "Automated Deriv Digit Match trading bot for Volatility 100 Index",
   "start_url": "/",
   "display": "standalone",

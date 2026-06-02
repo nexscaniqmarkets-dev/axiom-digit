@@ -792,17 +792,19 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#090a0f] text-gray-100 font-sans antialiased" id="main-app-content-view">
       {/* Upper Navigation Ribbons */}
-      <header className="bg-[#12131a] border-b border-gray-800/80 px-6 py-4.5" id="nav-header">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="bg-[#12131a] border-b border-gray-800/80 px-4 py-3" id="nav-header">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl" id="logo-emblem">
-              <Cpu className="w-6 h-6 text-emerald-400" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-100 tracking-tight">
-                Axiom Digit
-              </h1>
-            </div>
+            <img
+              src="/logo.png"
+              alt="Axiom Digit Icon"
+              className="w-10 h-10 rounded-xl object-contain"
+            />
+            <img
+              src="/banner.png"
+              alt="Axiom Digit"
+              className="h-8 object-contain"
+            />
           </div>
 
           {/* Connection Indicators status right */}
