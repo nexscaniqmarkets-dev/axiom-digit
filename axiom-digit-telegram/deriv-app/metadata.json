@@ -1,0 +1,6 @@
+{
+  "name": "Axiom Digit",
+  "description": "Fuses live Deriv DTrader Digit Stats and DBot logic block visualizations into an automated trading bot workspace for Volatility 100 Index (1s), monitoring leading digit leadership shifts to place high-probability Digit Match trades with confirmation filters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

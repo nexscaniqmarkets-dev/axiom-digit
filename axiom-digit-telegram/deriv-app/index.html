@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Axiom Digit</title>
+    <!-- Telegram Mini App SDK - must be first -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#06b6d4" />
+    <style>
+      /* Respect Telegram's safe area insets */
+      :root {
+        --tg-safe-area-top: env(safe-area-inset-top, 0px);
+        --tg-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--tg-theme-bg-color, #0f172a);
+        color: var(--tg-theme-text-color, #ffffff);
+        overscroll-behavior: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
