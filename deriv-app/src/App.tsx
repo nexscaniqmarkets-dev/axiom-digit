@@ -790,7 +790,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-gray-100 font-sans antialiased" id="main-app-content-view">
+    <div className="min-h-screen bg-[#090a0f] text-gray-100 font-sans antialiased pt-[env(safe-area-inset-top,0px)]" id="main-app-content-view">
       {/* Upper Navigation Ribbons */}
       <header className="bg-[#12131a] border-b border-gray-800/80 px-4 py-3" id="nav-header">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
@@ -798,12 +798,12 @@ export default function App() {
             <img
               src="/logo.png"
               alt="Axiom Digit Icon"
-              className="w-10 h-10 rounded-xl object-contain"
+              className="w-12 h-12 rounded-xl object-contain"
             />
             <img
               src="/banner.png"
               alt="Axiom Digit"
-              className="h-8 object-contain"
+              className="h-10 object-contain max-w-[180px]"
             />
           </div>
 
