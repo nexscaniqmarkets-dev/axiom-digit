@@ -1175,13 +1175,14 @@ app.post("/api/profiles", (req, res) => {
     botInst.initialStake = profileInput.initialStake;
     botInst.balance = profileInput.balance;
 
-    // Re-authorize with Deriv if token changed and WS is open
-    if (profileInput.apiToken && botInst.derivWs && botInst.derivWs.readyState === 1) {
-      console.log(`Re-authorizing bot ${profileInput.id} with new token`);
-      botInst.derivWs.send(JSON.stringify({ authorize: profileInput.apiToken }));
-    } else if (profileInput.apiToken && botInst.derivWs && botInst.derivWs.readyState !== 1) {
-      // WS not open yet — reconnect so authorize fires on open
-      botInst.reconnectToDeriv();
+    // Re-authorize only if token is non-empty
+    if (profileInput.apiToken) {
+      if (botInst.derivWs && botInst.derivWs.readyState === 1) {
+        console.log(`Re-authorizing bot ${profileInput.id} with new token`);
+        botInst.derivWs.send(JSON.stringify({ authorize: profileInput.apiToken }));
+      } else if (botInst.derivWs && botInst.derivWs.readyState !== 1) {
+        botInst.reconnectToDeriv();
+      }
     }
   }
 
@@ -1220,6 +1221,11 @@ app.post("/api/authorize", (req, res) => {
   if (!apiToken) {
     botInst.isAuthorized = false;
     botInst.realBalance = 0;
+    // Force close the Deriv WS so the authorized session ends
+    if (botInst.derivWs) {
+      try { botInst.derivWs.close(); } catch {}
+      botInst.derivWs = null;
+    }
     broadcastToClients({ type: "bot_status", profileId, state: botInst.getBotDetails() });
     res.json({ status: "disconnected" });
     return;
