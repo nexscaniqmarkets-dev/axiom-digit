@@ -92,12 +92,12 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
     onUpdateState({ apiToken: token, appId });
 
     // Directly trigger Deriv authorization via dedicated endpoint
-    if (token && botState.activeProfileId) {
+    if (token && activeProfileId) {
       fetch("/api/authorize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          profileId: botState.activeProfileId,
+          profileId: activeProfileId,
           apiToken: token,
           appId
         })
