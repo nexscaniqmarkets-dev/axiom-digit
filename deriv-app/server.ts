@@ -1216,6 +1216,15 @@ app.post("/api/authorize", (req, res) => {
     runningBots.set(profileId, botInst);
   }
 
+  // Empty token = disconnect request
+  if (!apiToken) {
+    botInst.isAuthorized = false;
+    botInst.realBalance = 0;
+    broadcastToClients({ type: "bot_status", profileId, state: botInst.getBotDetails() });
+    res.json({ status: "disconnected" });
+    return;
+  }
+
   // If WS is open, send authorize directly
   if (botInst.derivWs && botInst.derivWs.readyState === 1) {
     botInst.derivWs.send(JSON.stringify({ authorize: apiToken }));
