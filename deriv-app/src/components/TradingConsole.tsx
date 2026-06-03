@@ -161,7 +161,9 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
               <div className="flex items-baseline gap-1 mt-1">
                 <span className="text-xs font-mono text-gray-400">$</span>
                 <span className="text-base font-bold font-mono text-gray-100">
-                  {(botState.mode === TradingMode.REAL ? botState.realBalance : botState.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {botState.mode === TradingMode.REAL
+                    ? (botState.isAuthorized ? botState.realBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—")
+                    : botState.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <span className="text-[9px] font-mono text-gray-500 ml-1">
                   {botState.mode === TradingMode.REAL ? (botState.currency || "USD") : "USD"}
@@ -465,14 +467,34 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
                     </span>
                   )}
                 </div>
-                <button
-                  id="btn-apply-credentials"
-                  type="button"
-                  onClick={handleApplyCredentials}
-                  className="bg-amber-600/20 hover:bg-amber-600 border border-amber-500/30 hover:border-amber-500 text-amber-200 hover:text-white transition duration-200 px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold"
-                >
-                  Apply & Handshake
-                </button>
+                <div className="flex items-center gap-2">
+                  {botState.isAuthorized && (
+                    <button
+                      id="btn-disconnect"
+                      type="button"
+                      onClick={() => {
+                        setTokenInput("");
+                        onUpdateState({ apiToken: "", appId: appIdInput.trim() || "1089" });
+                        fetch("/api/authorize", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ profileId: activeProfileId, apiToken: "", appId: appIdInput.trim() || "1089" })
+                        }).catch(() => {});
+                      }}
+                      className="bg-red-950/20 hover:bg-red-600 border border-red-500/30 hover:border-red-500 text-red-400 hover:text-white transition duration-200 px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold"
+                    >
+                      Disconnect
+                    </button>
+                  )}
+                  <button
+                    id="btn-apply-credentials"
+                    type="button"
+                    onClick={handleApplyCredentials}
+                    className="bg-amber-600/20 hover:bg-amber-600 border border-amber-500/30 hover:border-amber-500 text-amber-200 hover:text-white transition duration-200 px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold"
+                  >
+                    Apply & Handshake
+                  </button>
+                </div>
               </div>
             </div>
           </div>
