@@ -296,6 +296,10 @@ class ServerTradingBot {
     });
   }
 
+  public reconnectToDeriv() {
+    this.connectToDeriv();
+  }
+
   private connectToDeriv() {
     this.disconnectFromDeriv();
     
@@ -1172,6 +1176,15 @@ app.post("/api/profiles", (req, res) => {
   if (botInst) {
     botInst.initialStake = profileInput.initialStake;
     botInst.balance = profileInput.balance;
+
+    // Re-authorize with Deriv if token changed and WS is open
+    if (profileInput.apiToken && botInst.derivWs && botInst.derivWs.readyState === 1) {
+      console.log(`Re-authorizing bot ${profileInput.id} with new token`);
+      botInst.derivWs.send(JSON.stringify({ authorize: profileInput.apiToken }));
+    } else if (profileInput.apiToken && botInst.derivWs && botInst.derivWs.readyState !== 1) {
+      // WS not open yet — reconnect so authorize fires on open
+      botInst.reconnectToDeriv();
+    }
   }
 
   broadcastToClients({
