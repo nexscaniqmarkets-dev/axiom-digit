@@ -84,12 +84,25 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
   const totalTrades = winCount + lossCount;
   const winRate = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
 
-  const handleApplyCredentials = (e: React.FormEvent) => {
-    e.preventDefault();
-    onUpdateState({
-      apiToken: tokenInput.trim(),
-      appId: appIdInput.trim() || "1089"
-    });
+  const handleApplyCredentials = () => {
+    const token = tokenInput.trim();
+    const appId = appIdInput.trim() || "1089";
+
+    // Save to state/profile
+    onUpdateState({ apiToken: token, appId });
+
+    // Directly trigger Deriv authorization via dedicated endpoint
+    if (token && botState.activeProfileId) {
+      fetch("/api/authorize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profileId: botState.activeProfileId,
+          apiToken: token,
+          appId
+        })
+      }).catch((err) => console.error("Authorize error:", err));
+    }
   };
 
   return (
@@ -560,7 +573,7 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
               </p>
             )}
 
-            <form onSubmit={handleApplyCredentials} className="space-y-3" id="credential-form">
+            <div className="space-y-3" id="credential-form">
               <div className="grid grid-cols-2 gap-3" id="credential-inputs-row">
                 <div>
                   <label className="block text-gray-400 text-[10px] mb-1" htmlFor="deriv-appid-input">App ID (Default: 1089)</label>
@@ -600,13 +613,14 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
                 </div>
                 <button
                   id="btn-apply-credentials"
-                  type="submit"
+                  type="button"
+                  onClick={handleApplyCredentials}
                   className="bg-amber-600/20 hover:bg-amber-600 border border-amber-500/30 hover:border-amber-500 text-amber-200 hover:text-white transition duration-200 px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold"
                 >
                   Apply & Handshake
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         )}
       </div>

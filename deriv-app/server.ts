@@ -350,15 +350,13 @@ class ServerTradingBot {
       this.derivWs.on("close", () => {
         console.log(`Bot ${this.profileId} Deriv WS connection closed.`);
         this.isAuthorized = false;
+        broadcastToClients({ type: "bot_status", profileId: this.profileId, state: this.getBotDetails() });
         
-        // Reconnect if still active
-        if (this.status === BotStatus.RUNNING) {
-          setTimeout(() => {
-            if (this.status === BotStatus.RUNNING) {
-              this.connectToDeriv();
-            }
-          }, 5000);
-        }
+        // Always reconnect for tick data (regardless of bot status)
+        setTimeout(() => {
+          console.log(`Bot ${this.profileId} reconnecting to Deriv WS...`);
+          this.connectToDeriv();
+        }, 3000);
       });
 
       this.derivWs.on("error", (err) => {
@@ -1193,6 +1191,40 @@ app.post("/api/profiles", (req, res) => {
   });
 
   res.json({ status: "updated", profile: profiles.find((p) => p.id === profileInput.id) });
+});
+
+
+app.post("/api/authorize", (req, res) => {
+  const { profileId, apiToken, appId } = req.body;
+  if (!profileId || !apiToken) {
+    res.status(400).json({ error: "Missing profileId or apiToken" });
+    return;
+  }
+
+  // Update profile token
+  const index = profiles.findIndex((p) => p.id === profileId);
+  if (index !== -1) {
+    profiles[index].apiToken = apiToken;
+    if (appId) profiles[index].appId = appId;
+    saveProfiles();
+  }
+
+  // Get or create bot instance
+  let botInst = runningBots.get(profileId);
+  if (!botInst) {
+    botInst = new ServerTradingBot(profileId);
+    runningBots.set(profileId, botInst);
+  }
+
+  // If WS is open, send authorize directly
+  if (botInst.derivWs && botInst.derivWs.readyState === 1) {
+    botInst.derivWs.send(JSON.stringify({ authorize: apiToken }));
+    res.json({ status: "authorizing", message: "Authorize sent to Deriv WS" });
+  } else {
+    // WS not ready — reconnect (will authorize on open)
+    botInst.reconnectToDeriv();
+    res.json({ status: "reconnecting", message: "Reconnecting to Deriv, will authorize on open" });
+  }
 });
 
 app.delete("/api/profiles/:id", (req, res) => {
