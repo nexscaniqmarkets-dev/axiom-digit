@@ -474,7 +474,8 @@ export const TradingConsole: React.FC<TradingConsoleProps> = ({
                       type="button"
                       onClick={() => {
                         setTokenInput("");
-                        onUpdateState({ apiToken: "", appId: appIdInput.trim() || "1089" });
+                        // Only call /api/authorize with empty token — do NOT call onUpdateState
+                        // to avoid the profile POST re-triggering authorization
                         fetch("/api/authorize", {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
